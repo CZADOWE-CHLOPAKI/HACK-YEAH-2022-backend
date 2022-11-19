@@ -1,5 +1,4 @@
 import os
-import re
 import shutil
 import uuid
 from pathlib import Path
@@ -9,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app import settings
 from app.src import crud
-from app.src.schemas import DocumentCreate
+from app.src.schemas import DocumentCreate, Document
 
 
 class ValidationError(Exception):
@@ -32,7 +31,7 @@ def validate_file(file: UploadFile):
     return True
 
 
-def save_file(file: UploadFile, db: Session) -> Path:
+def save_file(file: UploadFile, db: Session) -> Document:
     # saves to disk and db
     try:
         path = save_file_to_disk(file)
@@ -40,9 +39,8 @@ def save_file(file: UploadFile, db: Session) -> Path:
         raise
 
     document = DocumentCreate(path=str(path.resolve()), status=0, report='')
-    crud.create_document(db, document)
-
-    return path
+    db_document = crud.create_document(db, document)
+    return db_document
 
 
 def save_file_to_disk(file: UploadFile) -> Path:
