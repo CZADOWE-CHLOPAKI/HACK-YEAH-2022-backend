@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
 
@@ -10,6 +11,22 @@ from app.src.database import SessionLocal, engine
 from app.src.uri_utils import create_static_file_uri
 from app.src.utils import validate_file, ValidationError, save_file
 import os
+
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # init app
 models.Base.metadata.create_all(bind=engine)
