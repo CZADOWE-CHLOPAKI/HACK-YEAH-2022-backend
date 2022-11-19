@@ -1,12 +1,20 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.src import crud, models, schemas
 from app.src.database import SessionLocal, engine
+from app.src.utils import validate_filetype, save_file_to_disk
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+import uuid
+
+
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+print(dir_path)
 
 
 # Dependency
@@ -51,3 +59,21 @@ def create_item_for_user(
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+
+
+
+@app.post("/documents")
+def upload_documents(document: UploadFile):
+    # validate file extension && size
+    save_file_to_disk(document)
+    # validate_filetype(document)
+
+    # save file to filesystem
+
+    # create entry in the db
+
+    # validate file
+
+    # return info about the file
+    return {'filename': document.filename}
+    # return {"filenames": [file.filename for file in files]}
