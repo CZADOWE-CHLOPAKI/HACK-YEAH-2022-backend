@@ -32,7 +32,7 @@ def validate_file(file: UploadFile):
     return True
 
 
-def save_file(file: UploadFile, db: Session):
+def save_file(file: UploadFile, db: Session) -> Path:
     # saves to disk and db
     try:
         path = save_file_to_disk(file)
