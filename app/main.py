@@ -3,12 +3,11 @@ from sqlalchemy.orm import Session
 
 from app.src import crud, models, schemas
 from app.src.database import SessionLocal, engine
-from app.src.utils import validate_filetype, save_file_to_disk
+from app.src.utils import validate_filetype, save_file_to_disk, validate_file, ValidationError, save_file
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-import uuid
 
 
 import os
@@ -63,12 +62,18 @@ def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 
 @app.post("/documents")
-def upload_documents(document: UploadFile):
-    # validate file extension && size
-    save_file_to_disk(document)
-    # validate_filetype(document)
+def upload_documents(document: UploadFile, db: Session = Depends(get_db)):
+    try:
+        # validate file extension && size
+        # validate_filetype(document)
+        validate_file(document)
+    except ValidationError as e:
+        return {
+            'error': e
+        }
 
     # save file to filesystem
+    save_file(document, db)
 
     # create entry in the db
 

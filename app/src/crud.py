@@ -34,3 +34,11 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def create_document(db: Session, item: schemas.DocumentCreate):
+    db_document = models.Document(path=item.path, status=item.status, report=item.report)
+    db.add(db_document)
+    db.commit()
+    db.refresh(db_document)
+    return db_document

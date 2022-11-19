@@ -36,9 +36,16 @@ class User(UserBase):
 
 
 class Document(BaseModel):
+    id: int
     path: str
     status: int
     report: str
 
     class Config:
         orm_mode = True
+
+
+class DocumentCreate(BaseModel):
+    path: str
+    status: int
+    report: str
