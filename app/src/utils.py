@@ -11,26 +11,6 @@ from app.src import crud
 from app.src.schemas import DocumentCreate, Document
 
 
-class ValidationError(Exception):
-    pass
-
-
-def validate_filetype(path: str) -> bool:
-    # load file
-    return True
-    # check file type
-
-
-def validate_file(file: UploadFile):
-    # if len(file.filename) > settings.MAX_FILENAME_LENGTH:
-    #     raise ValidationError("Nazwa pliku jest za długa (max 255)")
-    #
-    # if not re.match(settings.FILENAME_REGEX, file.filename):
-    #     raise ValidationError("Nazwa pliku zawiera niedozwolone znaki")
-
-    return True
-
-
 def save_file(file: UploadFile, db: Session) -> Document:
     # saves to disk and db
     try:

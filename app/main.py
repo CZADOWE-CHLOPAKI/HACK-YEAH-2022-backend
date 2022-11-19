@@ -1,17 +1,19 @@
-from pathlib import Path
+import asyncio
+import shutil
 
-from fastapi import Depends, FastAPI, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
 
 from app import settings
 from app.src import models
+from app.src.converters import convert_file, ConversionError
 from app.src.database import SessionLocal, engine
-from app.src.uri_utils import create_static_file_uri
-from app.src.utils import validate_file, ValidationError, save_file
 import os
 
+from app.src.uri_utils import create_static_file_uri
+from app.src.validation import ValidationError
 
 app = FastAPI()
 
@@ -53,17 +55,36 @@ def get_db():
 
 @app.post("/documents")
 def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
-    try:
-        # validate file extension && size
-        # validate_filetype(document)
-        validate_file(file)
-    except ValidationError as e:
+    if file.file.__sizeof__() > 8000000:
         return {
-            'error': e
+            'error': 'Plik jest za duży'
         }
 
+    file_content = asyncio.run(file.read())
+    try:
+        converted_files = convert_file(file_content, file.filename)
+    except ConversionError as e:
+        return {
+            'error': 'Typ pliku nie jest wspierany'
+        }
+    except Exception as e:
+        print(e)
+        return {
+            'error': 'Błąd konwersji pliku na plik pdf'
+        }
+
+    try:
+        pass
+    except ValidationError as e:
+        return {
+            'error': str(e)
+        }
+
+    for file in converted_files:
+        shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
+
     # save file to filesystem
-    db_document = save_file(file, db)
+    # db_document = save_file(file, db)
 
     # create entry in the db
 
@@ -73,11 +94,21 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     #     {
     #         'name': 'asd',
     #         'corrected': False,
+    #             'coordinates': {x: , y: , pageNo: }
     #     }
     # ],
     # 'uri': create_static_file_uri()
 
     # return info about the file
-    return {
-        'uri': create_static_file_uri(Path(db_document.path))
-    }
+    json_response = {'data': []}
+    for file in converted_files:
+        json_response['data'].append({
+            'converted': file.converted,
+            'path': file.file_path,
+            'conversion_error': file.conversion_error,
+            'errors': [], # lub null
+            'filename': file.original_filename,
+            'uri': create_static_file_uri(file.file_path),
+        })
+
+    return json_response
