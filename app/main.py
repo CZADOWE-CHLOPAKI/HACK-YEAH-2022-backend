@@ -80,19 +80,18 @@ def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
         }
 
     # copy files so they are available for download
-    for file in converted_files:
-        process_file(file)
-        if file.converted and not error_occurred(file.errors, 69) and error_occurred(file.errors, 1001):
-            remove_file_signature(file)
+    for fle in converted_files:
+        process_file(fle)
+        if fle.converted and not error_occurred(fle.errors, 69) and error_occurred(fle.errors, 1001):
+            remove_file_signature(fle)
 
-        shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
+        shutil.copyfile(fle.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(fle.file_path))
 
     report_filepath = None
-    for file in converted_files:
+    for fle in converted_files:
         try:
-            print('aaaa')
-            receiver, sender, document = get_all(file.file_path)
-            print()
+            print(fle.file_path)
+            receiver, sender, document = get_all(fle.file_path)
 
             report_txt = f"""
 --- RECIEVER ---
@@ -114,7 +113,7 @@ date: {document.date}
 signee: {document.signee}
             """
             print('aaaabbbb')
-            report_filepath = file.file_path.replace('pdf', 'txt')
+            report_filepath = fle.file_path.replace('pdf', 'txt')
             print('report_filepath')
             print(report_filepath)
             with open(report_filepath, 'w') as f:
@@ -128,17 +127,17 @@ signee: {document.signee}
 
     # return info about the file
     json_response = {'data': []}
-    for file in converted_files:
+    for fle in converted_files:
         json_response['data'].append({
-            'converted': file.converted,
+            'converted': fle.converted,
             # 'path': file.file_path,
-            'size': os.path.getsize(file.file_path),
-            'conversion_error': file.conversion_error,
-            'errors': file.errors,
-            'filename': file.original_filename,
-            'uri': create_static_file_uri(file.file_path),
+            'size': os.path.getsize(fle.file_path),
+            'conversion_error': fle.conversion_error,
+            'errors': fle.errors,
+            'filename': fle.original_filename,
+            'uri': create_static_file_uri(fle.file_path),
             'report_uri': create_static_file_uri(report_filepath),
-            'sign_data': file.sign_data,
+            'sign_data': fle.sign_data,
             'verified_ts': datetime.now().timestamp(),
             'metadata': 'metadata'
         })
