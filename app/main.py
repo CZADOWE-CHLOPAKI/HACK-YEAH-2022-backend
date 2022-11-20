@@ -21,10 +21,7 @@ from app.src.validation import process_file
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "*"
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

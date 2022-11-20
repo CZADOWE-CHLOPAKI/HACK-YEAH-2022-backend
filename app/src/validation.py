@@ -37,7 +37,9 @@ def process_file(file: ConvertedFile):
         file.add_error('Plik nie może być zaszyfrowany', corrected=False, error_code=1001)
         return
 
-    remove_empty_pages(file)
+    file_good = remove_empty_pages(file)
+    if not file_good:
+        return
 
     # common validation
     if len(reader.get_form_text_fields().keys()) > 0:

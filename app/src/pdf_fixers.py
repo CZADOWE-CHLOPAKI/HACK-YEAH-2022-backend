@@ -17,6 +17,10 @@ def remove_empty_pages(file_in: ConvertedFile):
 
     pages_to_add = [i for i, size in enumerate(page_sizes) if size > 200]
 
+    if len(pages_to_add) == 0:
+        file_in.add_error("Plik pdf zawierał same puste strony", corrected=True, error_code=1001)
+        return False
+
     if len(page_sizes) != len(pages_to_add):
         for page in pages_to_add:
             pdf_writer.addPage(pdf_reader.getPage(page))
@@ -25,7 +29,9 @@ def remove_empty_pages(file_in: ConvertedFile):
             pdf_writer.write(fh)
 
         file_in.add_error("Z pliku pdf zostały usunięte puste strony", corrected=True)
+        return True
 
+    return True
 
 def remove_file_signature(file_in: ConvertedFile):
     pdf_writer = PdfFileWriter()
