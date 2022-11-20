@@ -87,12 +87,41 @@ def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
 
+    report_filepath = None
     for file in converted_files:
         try:
-            report = get_all(file.file_path)
-            print(report)
+            print('aaaa')
+            receiver, sender, document = get_all(file.file_path)
+            print()
+
+            report_txt = f"""
+--- RECIEVER ---
+name: {receiver.name}
+nip: {receiver.nip}
+pesel: {receiver.pesel}
+adress: {receiver.address}
+
+--- SENDER ---
+name: {sender.name}
+ePUAP: {sender.ePUAP}
+email: {sender.email}
+adress: {" ".join(sender.adres)}
+
+--- DOCUMENT --- 
+number: {document.number}
+unp: {document.unp}
+date: {document.date}
+signee: {document.signee}
+            """
+            print('aaaabbbb')
+            report_filepath = file.file_path.replace('pdf', 'txt')
+            print('report_filepath')
+            print(report_filepath)
+            with open(report_filepath, 'w') as f:
+                f.writelines(report_txt)
+
+            shutil.copyfile(report_filepath, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(report_filepath))
         except BaseException:
-            pass
             print('Report could not be generated')
     # save file to filesystem
     # db_document = save_file(file, db)
@@ -108,7 +137,7 @@ def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
             'errors': file.errors,
             'filename': file.original_filename,
             'uri': create_static_file_uri(file.file_path),
-            'report_uri': create_static_file_uri(file.file_path),
+            'report_uri': create_static_file_uri(report_filepath),
             'sign_data': file.sign_data,
             'verified_ts': datetime.now().timestamp(),
             'metadata': 'metadata'
