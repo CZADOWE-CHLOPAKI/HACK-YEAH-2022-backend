@@ -4,6 +4,7 @@ from datetime import datetime
 
 from fastapi import Depends, FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.models import Response
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
 
@@ -34,7 +35,7 @@ app.add_middleware(
 )
 
 # init app
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -57,7 +58,7 @@ def get_db():
 # endpoints
 
 @app.post("/documents")
-def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
+def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
     if file.file.__sizeof__() > 8000000:
         return {
             'error': 'Plik jest za duży'
@@ -67,9 +68,13 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     try:
         converted_files = convert_file(file_content, file.filename)
     except ConversionError as e:
-        raise HTTPException(status_code=420, detail='Typ pliku nie jest wspierany')
+        return {'data': [
+            {'errors': [{'corrected': False, 'error': 'Typ pliku nie jest wspierany'}], 'filename': file.filename}]
+        }
     except Exception as e:
-        raise HTTPException(status_code=420, detail='Błąd konwersji pliku na plik pdf')
+        return {'data': [
+            {'errors': [{'corrected': False, 'error': 'Błąd konwersji pliku na plik pdf'}], 'filename': file.filename}]
+        }
 
     # copy files so they are available for download
     for file in converted_files:
@@ -78,7 +83,6 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
             remove_file_signature(file)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
-
 
     # save file to filesystem
     # db_document = save_file(file, db)
