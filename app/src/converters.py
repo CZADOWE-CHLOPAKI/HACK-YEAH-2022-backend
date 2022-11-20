@@ -1,7 +1,7 @@
 import os
 import tempfile
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import zipfile
 
 
@@ -15,8 +15,14 @@ def absoluteFilePaths(directory):
 class ConvertedFile:
     file_path: str | None
     original_filename: str = None
+    errors: list = field(default_factory=lambda: [])
     conversion_error: bool = False
     converted: bool = True
+    sign_data: dict = field(default_factory=lambda: {})
+
+    def add_error(self, error: str):
+        if error is not None:
+            self.errors.append(error)
 
 
 class ConversionError(Exception):

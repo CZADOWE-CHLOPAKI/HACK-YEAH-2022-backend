@@ -1,5 +1,6 @@
 import asyncio
 import shutil
+from datetime import datetime
 
 from fastapi import Depends, FastAPI, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +14,7 @@ from app.src.database import SessionLocal, engine
 import os
 
 from app.src.uri_utils import create_static_file_uri
-from app.src.validation import ValidationError
+from app.src.validation import ValidationError, validate_file
 
 app = FastAPI()
 
@@ -66,12 +67,12 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     except ConversionError as e:
         return {
             'error': 'Typ pliku nie jest wspierany'
-        }
+        }, 400
     except Exception as e:
         print(e)
         return {
             'error': 'Błąd konwersji pliku na plik pdf'
-        }
+        }, 400
 
     try:
         pass
@@ -80,8 +81,10 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
             'error': str(e)
         }
 
+    # copy files so they are available for download
     for file in converted_files:
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
+        validate_file(file)
 
     # save file to filesystem
     # db_document = save_file(file, db)
@@ -104,11 +107,14 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     for file in converted_files:
         json_response['data'].append({
             'converted': file.converted,
-            'path': file.file_path,
+            # 'path': file.file_path,
+            'size': os.path.getsize(file.file_path),
             'conversion_error': file.conversion_error,
-            'errors': [], # lub null
+            'errors': file.errors,
             'filename': file.original_filename,
             'uri': create_static_file_uri(file.file_path),
+            'sign_data': file.sign_data,
+            'verified_ts': datetime.now().timestamp()
         })
 
     return json_response
