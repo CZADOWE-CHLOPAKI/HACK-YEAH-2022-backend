@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-HOST = environ.get('HOST', 'http://157.245.70.41')
+HOST = environ.get('HOST', 'http://157.245.70.41:8000')
 
 MYSQL_USER = environ.get('MYSQL_USER', 'sendhybrid')
 MYSQL_DB = environ.get('MYSQL_DB', 'sendhybrid')
