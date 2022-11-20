@@ -35,7 +35,7 @@ def process_file(file: ConvertedFile):
 
     x = validate_digital_signature(file.file_path)
     if type(x) == str:
-        file.add_error(x)
+        file.add_error(x, error_code=69)
     else:
         file.sign_data = x
 

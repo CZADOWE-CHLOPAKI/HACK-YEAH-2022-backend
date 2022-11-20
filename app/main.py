@@ -2,7 +2,7 @@ import asyncio
 import shutil
 from datetime import datetime
 
-from fastapi import Depends, FastAPI, UploadFile
+from fastapi import Depends, FastAPI, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from starlette.staticfiles import StaticFiles
@@ -15,6 +15,7 @@ import os
 
 from app.src.pdf_fixers import remove_file_signature
 from app.src.uri_utils import create_static_file_uri
+from app.src.utils import error_occurred
 from app.src.validation import process_file
 
 app = FastAPI()
@@ -66,19 +67,14 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     try:
         converted_files = convert_file(file_content, file.filename)
     except ConversionError as e:
-        return {
-            'error': 'Typ pliku nie jest wspierany'
-        }, 400
+        raise HTTPException(status_code=420, detail='Typ pliku nie jest wspierany')
     except Exception as e:
-        print(e)
-        return {
-            'error': 'Błąd konwersji pliku na plik pdf'
-        }, 400
+        raise HTTPException(status_code=420, detail='Błąd konwersji pliku na plik pdf')
 
     # copy files so they are available for download
     for file in converted_files:
         process_file(file)
-        if file.converted:
+        if file.converted and not error_occurred(file.errors, 69):
             remove_file_signature(file)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))

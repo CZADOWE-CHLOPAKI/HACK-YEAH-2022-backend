@@ -20,14 +20,15 @@ class ConvertedFile:
     converted: bool = True
     sign_data: dict = field(default_factory=lambda: {})
 
-    def add_error(self, error: str, corrected: bool = False, coordinates: dict = None):
+    def add_error(self, error: str, corrected: bool = False, coordinates: dict = None, error_code: int = None):
         if coordinates is None:
             coordinates = None
         if error is not None:
             self.errors.append({
                 'error': error,
                 'corrected': corrected,
-                'coordinates': coordinates
+                'coordinates': coordinates,
+                'error_code': error_code,
             })
 
 

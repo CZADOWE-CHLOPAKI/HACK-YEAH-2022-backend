@@ -11,6 +11,13 @@ from app.src import crud
 from app.src.schemas import DocumentCreate, Document
 
 
+def error_occurred(errors, error_code: int):
+    for error in errors:
+        if error['error_code'] == error_code:
+            return True
+    return False
+
+
 def save_file(file: UploadFile, db: Session) -> Document:
     # saves to disk and db
     try:
