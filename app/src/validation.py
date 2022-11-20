@@ -1,6 +1,8 @@
 import io
 
+import PyPDF2
 from PyPDF2 import PdfReader
+from PyPDF2.errors import FileNotDecryptedError
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign.validation import validate_pdf_signature
 
@@ -26,10 +28,18 @@ def validate_digital_signature(file_path: str):
 
 
 def process_file(file: ConvertedFile):
+    try:
+        reader = PdfReader(file.file_path)
+        # don't delete, here be dragons
+        # (header.pages generator needs to yield at least once)
+        print(reader.pages[0])
+    except FileNotDecryptedError:
+        file.add_error('Plik nie może być zaszyfrowany', corrected=False, error_code=1001)
+        return
+
     remove_empty_pages(file)
 
     # common validation
-    reader = PdfReader(file.file_path)
     if len(reader.get_form_text_fields().keys()) > 0:
         file.add_error('Plik nie może zawierać form', corrected=False)
 

@@ -74,7 +74,7 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     # copy files so they are available for download
     for file in converted_files:
         process_file(file)
-        if file.converted and not error_occurred(file.errors, 69):
+        if file.converted and not error_occurred(file.errors, 69) and error_occurred(file.errors, 1001):
             remove_file_signature(file)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
