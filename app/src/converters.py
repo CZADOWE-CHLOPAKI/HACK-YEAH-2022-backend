@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import zipfile
 
 
-def absoluteFilePaths(directory):
+def absolute_file_paths(directory):
     for dirpath,_,filenames in os.walk(directory):
         for f in filenames:
             yield os.path.abspath(os.path.join(dirpath, f))
@@ -20,9 +20,15 @@ class ConvertedFile:
     converted: bool = True
     sign_data: dict = field(default_factory=lambda: {})
 
-    def add_error(self, error: str):
+    def add_error(self, error: str, corrected: bool = False, coordinates: dict = None):
+        if coordinates is None:
+            coordinates = None
         if error is not None:
-            self.errors.append(error)
+            self.errors.append({
+                'error': error,
+                'corrected': corrected,
+                'coordinates': coordinates
+            })
 
 
 class ConversionError(Exception):
@@ -55,8 +61,8 @@ class DetectFiletype:
     def detect(file_content: bytes):
         if file_content[:8] == DetectFiletype.MagicNumbers.DOCX:
             return DetectFiletype.MagicNumbers.DOCX
-        if file_content[:6] == DetectFiletype.MagicNumbers.XML:
-            return DetectFiletype.MagicNumbers.XML
+        # if file_content[:6] == DetectFiletype.MagicNumbers.XML:
+        #     return DetectFiletype.MagicNumbers.XML
         if file_content[:4] == DetectFiletype.MagicNumbers.ZIP:
             return DetectFiletype.MagicNumbers.ZIP
         if file_content[:5] == DetectFiletype.MagicNumbers.PDF:
@@ -74,7 +80,7 @@ def zip_to_pdf(file_in: str) -> list[ConvertedFile]:
     with tempfile.TemporaryDirectory() as tmp_dir:
         with zipfile.ZipFile(file_in, 'r') as zip_ref:
             zip_ref.extractall(tmp_dir)
-            file_paths = list(absoluteFilePaths(tmp_dir))
+            file_paths = list(absolute_file_paths(tmp_dir))
             for file_path in file_paths:
                 with open(file_path, 'rb') as f:
                     converted_file = convert_file(f.read(), os.path.basename(file_path))

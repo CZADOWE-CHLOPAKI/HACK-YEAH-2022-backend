@@ -14,7 +14,7 @@ from app.src.database import SessionLocal, engine
 import os
 
 from app.src.uri_utils import create_static_file_uri
-from app.src.validation import ValidationError, validate_file
+from app.src.validation import process_file
 
 app = FastAPI()
 
@@ -74,33 +74,14 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
             'error': 'Błąd konwersji pliku na plik pdf'
         }, 400
 
-    try:
-        pass
-    except ValidationError as e:
-        return {
-            'error': str(e)
-        }
-
     # copy files so they are available for download
     for file in converted_files:
+        process_file(file)
+
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
-        validate_file(file)
 
     # save file to filesystem
     # db_document = save_file(file, db)
-
-    # create entry in the db
-
-    # validate file
-
-    # "errors": [
-    #     {
-    #         'name': 'asd',
-    #         'corrected': False,
-    #             'coordinates': {x: , y: , pageNo: }
-    #     }
-    # ],
-    # 'uri': create_static_file_uri()
 
     # return info about the file
     json_response = {'data': []}

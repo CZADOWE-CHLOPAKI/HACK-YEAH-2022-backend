@@ -4,10 +4,7 @@ from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign.validation import validate_pdf_signature
 
 from app.src.converters import ConvertedFile
-
-
-class ValidationError(Exception):
-    pass
+from app.src.pdf_fixers import remove_empty_pages
 
 
 def validate_digital_signature(file_path: str):
@@ -27,18 +24,7 @@ def validate_digital_signature(file_path: str):
     }
 
 
-def validate_filetype(path: str) -> bool:
-    # load file
-    return True
-    # check file type
-
-
-def is_pdf(file_content: bytes) -> bool:
-    pdf_magic_number = b'\x25\x50\x44\x46\x2D'
-    return file_content[:5] == pdf_magic_number
-
-
-def validate_file(file: ConvertedFile):
+def process_file(file: ConvertedFile):
     # check if file is pdf
     x = validate_digital_signature(file.file_path)
     if type(x) == str:
@@ -46,9 +32,4 @@ def validate_file(file: ConvertedFile):
     else:
         file.sign_data = x
 
-
-    # if len(file.filename) > settings.MAX_FILENAME_LENGTH:
-    #     raise ValidationError("Nazwa pliku jest za długa (max 255)")
-    #
-    # if not re.match(settings.FILENAME_REGEX, file.filename):
-    #     raise ValidationError("Nazwa pliku zawiera niedozwolone znaki")
+    remove_empty_pages(file)
