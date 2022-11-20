@@ -1,6 +1,6 @@
 import os
 from PyPDF2 import PdfFileReader
-
+import re
 def file_extention(path):
     _, extension = os.path.splitext(path)
     return extension[1::]

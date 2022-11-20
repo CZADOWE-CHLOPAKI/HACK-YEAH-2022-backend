@@ -18,6 +18,7 @@ from app.src.pdf_fixers import remove_file_signature
 from app.src.uri_utils import create_static_file_uri
 from app.src.utils import error_occurred
 from app.src.validation import process_file
+from metadata.ultimate_metadata import get_all
 
 app = FastAPI()
 
@@ -54,6 +55,11 @@ def get_db():
 
 # endpoints
 
+
+@app.get("/report")
+def get_report(uris: list[str]):
+    pass
+
 @app.post("/documents")
 def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
     if file.file.__sizeof__() > 8000000:
@@ -81,6 +87,13 @@ def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
 
+    for file in converted_files:
+        try:
+            report = get_all(file.file_path)
+            print(report)
+        except BaseException:
+            pass
+            print('Report could not be generated')
     # save file to filesystem
     # db_document = save_file(file, db)
 
@@ -95,6 +108,7 @@ def upload_documents(file: UploadFile):  # , db: Session = Depends(get_db)
             'errors': file.errors,
             'filename': file.original_filename,
             'uri': create_static_file_uri(file.file_path),
+            'report_uri': create_static_file_uri(file.file_path),
             'sign_data': file.sign_data,
             'verified_ts': datetime.now().timestamp(),
             'metadata': 'metadata'

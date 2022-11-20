@@ -1,3 +1,5 @@
+import re
+
 class Sender:
     def __init__(self, name, adres, email, ePUAP):
         self.name = name

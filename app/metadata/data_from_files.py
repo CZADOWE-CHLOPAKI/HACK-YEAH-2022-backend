@@ -6,6 +6,8 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 import re
 
+
+
 folder = "/home/lazarus/Desktop/testi"
 key_word_sender = "Kontakt:"
 key_word_receiver = "Korespondencję otrzymują"

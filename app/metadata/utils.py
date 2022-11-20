@@ -4,7 +4,6 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 import os
 import io
-import re
 
 
 folder = "/home/lazarus/Desktop/testi"

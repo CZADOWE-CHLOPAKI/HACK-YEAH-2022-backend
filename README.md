@@ -1,5 +1,3 @@
 # HACK-YEAH-2022-backend
-backend 
-
-
-aaaa
+use `build` script to build docker container
+run app `using `

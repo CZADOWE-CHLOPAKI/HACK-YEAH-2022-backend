@@ -1,6 +1,7 @@
-from utils import *
-from classes import *
-from file2sender import get_sender_title
+from app.metadata.utils import *
+from app.metadata.classes import *
+from app.metadata.file2sender import get_sender_title
+import re
 
 key_word_UNP = "UNP:"
 key_word_number = "Znak sprawy:"

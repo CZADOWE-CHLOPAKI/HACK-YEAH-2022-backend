@@ -1,5 +1,6 @@
-from utils import *
-from classes import *
+from app.metadata.utils import *
+from app.metadata.classes import *
+import re
 
 key_word_email = "e-mail:"
 key_word_ePUAP = "ePUAP"

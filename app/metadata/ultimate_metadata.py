@@ -1,11 +1,11 @@
-from utils import *
-from classes import *
-from PyPDF2 import PdfReader
-from file2sender import get_sender_title
-from file2document import get_document_signee, get_document_date
-from file2receiver import get_receiver_pesel_or_nip
+import re
 
-path = folder + "/" + file
+from app.metadata.utils import *
+from app.metadata.classes import *
+from PyPDF2 import PdfReader
+from app.metadata.file2sender import get_sender_title
+from app.metadata.file2document import get_document_signee, get_document_date
+from app.metadata.file2receiver import get_receiver_pesel_or_nip
 
 header_data = []
 left_up_data = []
@@ -199,11 +199,3 @@ def get_all(path):
     sender = get_sender_obj(final, path)
     document = get_document_obj(final, path)
     return receiver, sender, document
-
-get_all(path)
-
-
-
-
-    
-    
