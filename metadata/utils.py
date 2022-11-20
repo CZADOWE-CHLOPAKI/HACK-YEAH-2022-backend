@@ -49,12 +49,14 @@ def find_loop(seq, subseq):
             return i
 
 def find_value(line, key):
-    index = find_loop(line, key) + len(key)
-    word = ""
-    line = line[index::].lstrip()
-    for i in range(len(line)):
-        if (line[i] != " "):
-            word += line[i]
-        else:
-            return word
-    return word
+    if find_loop(line, key)!=None:
+        index = find_loop(line, key) + len(key)
+        word = ""
+        line = line[index::].lstrip()
+        for i in range(len(line)):
+            if (line[i] != " "):
+                word += line[i]
+            else:
+                return word
+        return word
+    return ""
