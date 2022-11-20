@@ -13,11 +13,13 @@ class ValidationError(Exception):
 def validate_digital_signature(file_path: str):
     with open(file_path, 'rb') as f:
         r = PdfFileReader(io.BytesIO(f.read()))
-    sig = r.embedded_signatures[0]
-    status = validate_pdf_signature(sig)
 
     if not len(r.embedded_signatures):
         return 'Dokument nie posiada podpisu elektronicznego'
+
+    sig = r.embedded_signatures[0]
+    status = validate_pdf_signature(sig)
+
     return {
         'subject': status.signing_cert.subject.human_friendly,
         'trusted': status.trusted,
