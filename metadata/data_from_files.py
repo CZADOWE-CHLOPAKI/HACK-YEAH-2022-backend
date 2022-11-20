@@ -1,6 +1,5 @@
 import io
-from sender import Sender
-from receiver import Receiver
+from classes import *
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdfminer.converter import TextConverter
@@ -126,35 +125,4 @@ def get_UNP(lines):
         index = line.find(key_word_UNP)
         if index != -1:
             return line[index+len(key_word_UNP)::].strip()
-
-# def get_receiver_from_file(filename, infilename_clean, key_word):
-#     with open(filename, 'r') as f:
-#         lines = f.readlines()
-#         for i, line in enumerate(lines):
-#             if line.find(key_word) != -1:
-#                 name = lines[i+1].strip()
-#                 pesel = lines[i+2].strip()
-#                 email =  lines[i+3].strip()
-#                 telephone = lines[i+4].strip()
-#                 sender = Sender(name, position, email, telephone)
-#                 return sender
-
-
-inPDFfile = "/home/lazarus/Desktop/testi/send_hybrid_gov_01.pdf"
-infilename = "/home/lazarus/Desktop/testi/send_hybrid_gov_01.txt"
-infilename_clean = "/home/lazarus/Desktop/testi/send_hybrid_gov_01_clean.txt"
-#print(get_sender_from_file(infilename, infilename_clean))
-#print(get_sender_from_file(infilename,infilename_clean))
-#sen = get_sender_from_file(outfilename, key_word_sender)
-# print(sen)
-#print(get_UNP(outfilename, key_word_UNP))
-#pdf2txt(inPDFfile, infilename)
-#print(get_sender_from_file(infilename, infilename_clean))
-
-lines = file2list(infilename)
-# epuap = get_sender_ePAUP(lines)
-adres = get_sender_address(lines)
-print(adres)
-#no_empty_lines_file(infilename, outfilename)
-
 

@@ -67,8 +67,4 @@ def file2receiver(pdf_path):
     email = get_sender_email(lines)
     ePUAP = get_sender_ePAUP(lines)
     sender = Sender(name, address, email, ePUAP)
-    print(sender)
     return sender
-
-path = folder + "/" + file
-# file2receiver(path)
