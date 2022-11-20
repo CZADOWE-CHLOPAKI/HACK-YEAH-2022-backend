@@ -25,3 +25,16 @@ def remove_empty_pages(file_in: ConvertedFile):
             pdf_writer.write(fh)
 
         file_in.add_error("Z pliku pdf zostały usunięte puste strony", corrected=True)
+
+
+def remove_file_signature(file_in: ConvertedFile):
+    pdf_writer = PdfFileWriter()
+    pdf_reader = PdfFileReader(file_in.file_path)
+
+    for page in pdf_reader.pages:
+        pdf_writer.addPage(page)
+
+    with open(file_in.file_path, 'wb') as fh:
+        pdf_writer.write(fh)
+
+    file_in.add_error("Z pliku pdf został usunięty podpis cyfrowy", corrected=True)

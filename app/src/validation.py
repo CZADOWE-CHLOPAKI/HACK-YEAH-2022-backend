@@ -1,5 +1,6 @@
 import io
 
+from PyPDF2 import PdfReader
 from pyhanko.pdf_utils.reader import PdfFileReader
 from pyhanko.sign.validation import validate_pdf_signature
 
@@ -25,11 +26,16 @@ def validate_digital_signature(file_path: str):
 
 
 def process_file(file: ConvertedFile):
-    # check if file is pdf
+    remove_empty_pages(file)
+
+    # common validation
+    reader = PdfReader(file.file_path)
+    if len(reader.get_form_text_fields().keys()) > 0:
+        file.add_error('Plik nie może zawierać form', corrected=False)
+
     x = validate_digital_signature(file.file_path)
     if type(x) == str:
         file.add_error(x)
     else:
         file.sign_data = x
 
-    remove_empty_pages(file)

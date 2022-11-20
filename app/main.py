@@ -13,6 +13,7 @@ from app.src.converters import convert_file, ConversionError
 from app.src.database import SessionLocal, engine
 import os
 
+from app.src.pdf_fixers import remove_file_signature
 from app.src.uri_utils import create_static_file_uri
 from app.src.validation import process_file
 
@@ -77,8 +78,11 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
     # copy files so they are available for download
     for file in converted_files:
         process_file(file)
+        if file.converted:
+            remove_file_signature(file)
 
         shutil.copyfile(file.file_path, settings.PROCESSED_DOCUMENTS_DIR / os.path.basename(file.file_path))
+
 
     # save file to filesystem
     # db_document = save_file(file, db)
