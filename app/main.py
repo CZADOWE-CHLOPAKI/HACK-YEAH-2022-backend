@@ -114,7 +114,8 @@ def upload_documents(file: UploadFile, db: Session = Depends(get_db)):
             'filename': file.original_filename,
             'uri': create_static_file_uri(file.file_path),
             'sign_data': file.sign_data,
-            'verified_ts': datetime.now().timestamp()
+            'verified_ts': datetime.now().timestamp(),
+            'metadata': 'metadata'
         })
 
     return json_response
