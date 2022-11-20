@@ -18,7 +18,7 @@ def remove_empty_pages(file_in: ConvertedFile):
     pages_to_add = [i for i, size in enumerate(page_sizes) if size > 200]
 
     if len(pages_to_add) == 0:
-        file_in.add_error("Plik pdf zawierał same puste strony", corrected=True, error_code=1001)
+        file_in.add_error("Plik pdf zawierał same puste strony", corrected=False, error_code=1001)
         return False
 
     if len(page_sizes) != len(pages_to_add):

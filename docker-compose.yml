@@ -17,5 +17,9 @@ services:
     volumes:
       - my-db:/var/lib/mysql
 # Names our volume
+  back:
+    image: sendhybridgov-back:1.0
+    container_name: backend
+    environment:
 volumes:
   my-db:
