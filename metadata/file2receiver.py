@@ -39,13 +39,8 @@ def file2receiver(pdf_path):
     if key==key_word_PESEL:
         new_pesel = pesel_or_nip
         receiver = Receiver(name, address, new_pesel, nip=None)
-        print(receiver)
         return receiver
     elif key==key_word_NIP:
         new_nip = pesel_or_nip
         receiver = Receiver(name, address, pesel=None, nip=new_nip)
-        print(receiver)
         return receiver
-
-path = folder + "/" + file
-# file2receiver(path)

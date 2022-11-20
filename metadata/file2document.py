@@ -20,7 +20,7 @@ def get_document_signee(txt_file):
     lines_lower = lines_lower[key_index + len(sender_title)::]
     index = find_loop(lines_lower, sender_key_lower) + len(sender_key_lower)
     name = lines_lower[index]
-    return name.strip()
+    return name.strip().title()
 
 def get_document_number(lines):
     for _ , line in enumerate(lines):
@@ -42,8 +42,4 @@ def file2document(pdf_path):
     number = get_document_number(lines)
     date = get_document_date(lines)
     document = Document(number, unp, date, signee)
-    print(document)
     return document
-
-path = folder + "/" + file
-file2document(path)

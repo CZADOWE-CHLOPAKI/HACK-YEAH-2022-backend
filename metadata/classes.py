@@ -16,7 +16,7 @@ class Receiver:
         self.nip = nip
 
     def __str__(self) -> str:
-        return f"name -> {self.name}\naddress -> {self.address}\nPESEL -> {self.pesel}\nNIP -> {self.nip}"
+        return f"name -> {self.name}\naddress -> {self.address}\nPESEL -> {self.pesel}\nNIP -> {self.nip}\n"
 
 class Document:
     def __init__(self, number, unp, date, signee):
@@ -26,4 +26,4 @@ class Document:
         self.signee = signee
 
     def __str__(self) -> str:
-        return f"number -> {self.number}\nunp -> {self.unp}\ndate -> {self.date}\nsignee -> {self.signee}"
+        return f"number -> {self.number}\nunp -> {self.unp}\ndate -> {self.date}\nsignee -> {self.signee}\n"
